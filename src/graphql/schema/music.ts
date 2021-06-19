@@ -60,23 +60,28 @@ export const typeDefs = gql`
 export const resolvers = {
   Query: {
     getSonglistDetail: async (_parent, args: { id: string }, { req }, _info) => {
+      const headers = req.headers.cookie ? { cookie: req.headers.cookie } : {};
+      const commonOptions = {
+        headers,
+        baseURL: BASE_URL,
+        withCredentials: true,
+      };
+
       try {
         const songlistRes: any = await axios.get(`/playlist/detail`, {
-          baseURL: BASE_URL,
+          ...commonOptions,
           params: {
             id: args.id,
           },
-          withCredentials: true,
         });
 
         const { playlist } = songlistRes.data;
         const songIds = playlist.trackIds.map((track) => track.id);
         const songsRes: any = await axios.get(`/song/detail`, {
-          baseURL: BASE_URL,
+          ...commonOptions,
           params: {
             ids: songIds.join(','),
           },
-          withCredentials: true,
         });
 
         const songs = songsRes.data.songs.map((item) => ({

@@ -59,10 +59,10 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    getSonglistDetail: async (_parent, args: { id: string }, { cookie }, _info) => {
+    getSonglistDetail: async (_parent, args: { id: string }, { req }, _info) => {
       try {
         const songlistRes: any = await got(prefixApiUrl(`/playlist/detail`), {
-          headers: { Cookie: cookie },
+          headers: req.headers,
           searchParams: {
             id: args.id,
           },
@@ -71,7 +71,7 @@ export const resolvers = {
         const { playlist } = songlistRes;
         const songIds = playlist.trackIds.map((track) => track.id);
         const songsRes: any = await got(prefixApiUrl(`/song/detail`), {
-          headers: { Cookie: cookie },
+          headers: req.headers,
           searchParams: {
             ids: songIds.join(','),
           },

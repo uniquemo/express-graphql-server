@@ -14,7 +14,7 @@ async function startServer() {
       console.log('headers => ', req.headers);
       console.log('body => ', req.body);
       return {
-        cookie: req.headers.Cookie,
+        req,
       };
     },
   });

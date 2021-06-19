@@ -1,6 +1,6 @@
-import got from 'got';
+import axios from 'axios';
 import { ApolloError, gql } from 'apollo-server-express';
-import { prefixApiUrl } from 'helpers/api';
+import { BASE_URL } from 'helpers/api';
 
 export const typeDefs = gql`
   type User {
@@ -61,23 +61,25 @@ export const resolvers = {
   Query: {
     getSonglistDetail: async (_parent, args: { id: string }, { req }, _info) => {
       try {
-        const songlistRes: any = await got(prefixApiUrl(`/playlist/detail`), {
-          headers: req.headers,
-          searchParams: {
+        const songlistRes: any = await axios.get(`/playlist/detail`, {
+          baseURL: BASE_URL,
+          params: {
             id: args.id,
           },
-        }).json();
+          withCredentials: true,
+        });
 
-        const { playlist } = songlistRes;
+        const { playlist } = songlistRes.data;
         const songIds = playlist.trackIds.map((track) => track.id);
-        const songsRes: any = await got(prefixApiUrl(`/song/detail`), {
-          headers: req.headers,
-          searchParams: {
+        const songsRes: any = await axios.get(`/song/detail`, {
+          baseURL: BASE_URL,
+          params: {
             ids: songIds.join(','),
           },
-        }).json();
+          withCredentials: true,
+        });
 
-        const songs = songsRes.songs.map((item) => ({
+        const songs = songsRes.data.songs.map((item) => ({
           id: item.id,
           name: item.name,
           fee: item.fee,

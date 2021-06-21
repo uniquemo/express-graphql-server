@@ -100,6 +100,7 @@ export const resolvers = {
           songs,
         };
       } catch (error) {
+        error.message = error?.response?.data?.message;
         throw new ApolloError(error);
       }
     },

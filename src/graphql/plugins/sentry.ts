@@ -14,7 +14,7 @@ const sentryPlugin = {
 
           scope.setUser({
             id: headers['netease-user-id'],
-            username: headers['netease-nick-name'],
+            username: headers['netease-nick-name'] && decodeURIComponent(headers['netease-nick-name']),
             token: headers['netease-token'],
           });
 

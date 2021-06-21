@@ -7,9 +7,16 @@ const sentryPlugin = {
         const { source, errors, logger } = rc;
         logger.error(source);
         logger.error(errors);
+        const { headers } = rc.context.req;
 
         Sentry.withScope((scope: Sentry.Scope) => {
           scope.addEventProcessor((event: Sentry.Event) => Sentry.Handlers.parseRequest(event, rc.context.req));
+
+          scope.setUser({
+            id: headers['netease-user-id'],
+            username: headers['netease-nick-name'],
+            token: headers['netease-token'],
+          });
 
           scope.setTags({
             graphql: rc.operation?.operation || 'parse_err',
